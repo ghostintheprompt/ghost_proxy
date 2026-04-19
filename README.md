@@ -54,4 +54,4 @@ The events depicted in this sandbox are for **authorized security testing only**
 **USE AT YOUR OWN RISK. THINK LIKE THE ENEMY. PROTECT THE WORLD.**
 
 ---
-© 2026 [GHOST_IN_THE_PROMPT] // Independent Editorial Lab
+© 2026 va a fare una bella cacata ti senti meglio
