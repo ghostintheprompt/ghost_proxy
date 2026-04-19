@@ -1,0 +1,107 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-ghost-bg: #050505;
+  --color-ghost-card: #0a0a0a;
+  --color-ghost-border: #1a1a1a;
+  --color-ghost-accent: #ffffff;
+  --color-ghost-neon: #00ff00;
+  --color-ghost-text: #e0e0e0;
+  --color-ghost-muted: #666666;
+}
+
+@keyframes flicker {
+  0% { opacity: 0.8; }
+  5% { opacity: 0.5; }
+  10% { opacity: 0.9; }
+  15% { opacity: 0.3; }
+  20% { opacity: 1; }
+  55% { opacity: 0.9; }
+  60% { opacity: 0.4; }
+  95% { opacity: 0.9; }
+  100% { opacity: 1; }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.ghost-flicker {
+  animation: flicker 0.15s infinite;
+}
+
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.15) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05),
+    rgba(0, 255, 0, 0.03),
+    rgba(0, 0, 255, 0.05)
+  );
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.crt-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 255, 0, 0.05) 50%,
+    transparent
+  );
+  animation: scanline 10s linear infinite;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+@layer base {
+  body {
+    @apply bg-ghost-bg text-ghost-text font-mono antialiased selection:bg-ghost-accent selection:text-ghost-bg;
+  }
+}
+
+@layer utilities {
+  .ghost-blur {
+    @apply backdrop-blur-md bg-ghost-card/80 border border-ghost-border;
+  }
+  
+  .ghost-scanner {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ghost-scanner::after {
+    content: "";
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(0, 255, 0, 0.1), transparent);
+    animation: scan 3s linear infinite;
+    pointer-events: none;
+  }
+  
+  @keyframes scan {
+    0% { top: -100%; }
+    100% { top: 100%; }
+  }
+}
