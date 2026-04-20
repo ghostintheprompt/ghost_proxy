@@ -1,4 +1,6 @@
-<img src="ghost_proxy.png" width="200">
+<p align="center">
+  <img src="ghost_proxy.png" width="520">
+</p>
 
 # GHOST_PROXY
 High-fidelity UserScript workshop and offensive security sandbox. — v1.0
