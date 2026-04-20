@@ -1,12 +1,11 @@
-# GHOST_PROXY // Digital Augmentation Lab
+<img src="ghost_proxy.png" width="200">
 
-<div align="center">
-  <img src="ghost_proxy.png" width="256" height="256" alt="Ghost Proxy Icon" />
-</div>
+# GHOST_PROXY
+High-fidelity UserScript workshop and offensive security sandbox. — v1.0
 
 > "The hardest vulnerabilities aren't in the code, they are in the assumptions."
 
-**GHOST_PROXY** is a high-fidelity UserScript workshop and offensive security sandbox. Designed for security researchers, Red Team operators, and master developers, it provides a centralized, AI-integrated environment to develop, test, and deploy site augmentations that slice through modern detection layers.
+**GHOST_PROXY** is a centralized, AI-integrated environment to develop, test, and deploy site augmentations that slice through modern detection layers.
 
 ---
 
