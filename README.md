@@ -1,6 +1,8 @@
 # GHOST_PROXY // Digital Augmentation Lab
 
-![Ghost Proxy](https://picsum.photos/seed/ghost/1200/400?blur=4)
+<div align="center">
+  <img src="ghost_proxy.png" width="256" height="256" alt="Ghost Proxy Icon" />
+</div>
 
 > "The hardest vulnerabilities aren't in the code, they are in the assumptions."
 
