@@ -8,12 +8,12 @@
 
 ---
 
-## 🛰️ Total System Capabilities
+## Total System Capabilities
 
 This workshop is not merely a script manager; it is a full-stack **Red-Team Command Center**. Every tool is optimized for the 2026 digital landscape:
 
-- **🤖 [[GHOST_AGENT]]**: Integrated **Gemini 3.1 Pro** link. This isn't a chatbot; it's a code-level neural architect that helps you refine intercepts, harden stealth, and generate complex bypass logic in real-time.
-- **🛡️ [[STEALTH_SYSTEM]]**: Global environment obfuscation. Toggling `STEALTH_ACTIVE` forces all generated scripts to use **Shadow DOM (mode: 'closed')** and **Proxy-based monkey patching** to hide your footprint from the target site's own defenses.
+- **[[GHOST_AGENT]]**: Integrated **Gemini 3.1 Pro** link. This isn't a chatbot; it's a code-level neural architect that helps you refine intercepts, harden stealth, and generate complex bypass logic in real-time.
+- **[[STEALTH_SYSTEM]]**: Global environment obfuscation. Toggling `STEALTH_ACTIVE` forces all generated scripts to use **Shadow DOM (mode: 'closed')** and **Proxy-based monkey patching** to hide your footprint from the target site's own defenses.
 - **🛠️ [[ACTIVE_PROTOCOLS]]**:
   - **Ghost Protocol: UI Sentinel**: Real-time monitoring for high-altitude overlays and DOM poisoning.
   - **Ghost Protocol: Stealth Cloak**: The premier obfuscation kit for hiding script presence from anti-tamper utilities.
@@ -24,7 +24,7 @@ This workshop is not merely a script manager; it is a full-stack **Red-Team Comm
 
 ---
 
-## 🌪️ 2026 Offensive Strategic Report
+## 2026 Offensive Strategic Report
 
 In 2026, the aggressor does not use static payloads. They use **Neural Intercepts**.
 
@@ -34,7 +34,7 @@ In 2026, the aggressor does not use static payloads. They use **Neural Intercept
 
 ---
 
-## 🚀 Deployment Workflow
+## Deployment Workflow
 
 1. **Initialize Link**: Select a primary intercept from the sidebar.
 2. **Consult the Agent**: Use the right-panel to request surgical modifications or architectural hardening.
@@ -43,7 +43,7 @@ In 2026, the aggressor does not use static payloads. They use **Neural Intercept
 
 ---
 
-## ⚠️ THE GHOST_PROXY WARNING
+## THE GHOST_PROXY WARNING
 
 **The application which you are about to interact with is a real-world digital augmentation engine.**
 
@@ -54,4 +54,4 @@ The events depicted in this sandbox are for **authorized security testing only**
 **USE AT YOUR OWN RISK. THINK LIKE THE ENEMY. PROTECT THE WORLD.**
 
 ---
-© 2026 [GHOST_IN_THE_PROMPT] // Independent Editorial Lab
+© 2026 va a fare una bella cacata ti senti meglio
