@@ -17,7 +17,7 @@ This workshop is not merely a script manager; it is a full-stack **Red-Team Comm
 
 - **[[GHOST_AGENT]]**: Integrated **Gemini 3.1 Pro** link. This isn't a chatbot; it's a code-level neural architect that helps you refine intercepts, harden stealth, and generate complex bypass logic in real-time.
 - **[[STEALTH_SYSTEM]]**: Global environment obfuscation. Toggling `STEALTH_ACTIVE` forces all generated scripts to use **Shadow DOM (mode: 'closed')** and **Proxy-based monkey patching** to hide your footprint from the target site's own defenses.
-- **🛠️ [[ACTIVE_PROTOCOLS]]**:
+- **[[ACTIVE_PROTOCOLS]]**:
   - **Ghost Protocol: UI Sentinel**: Real-time monitoring for high-altitude overlays and DOM poisoning.
   - **Ghost Protocol: Stealth Cloak**: The premier obfuscation kit for hiding script presence from anti-tamper utilities.
   - **Surgical Intercept: E-Comm Auditor**: A specialized platform-aware probe that recognizes and audits Shopify and WooCommerce vulnerabilities (Price Tampering, Discount Enumeration).
