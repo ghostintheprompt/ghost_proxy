@@ -23,6 +23,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { GhostScript, GhostAgentMessage } from './types';
 import { generateGhostScript } from './services/geminiService';
+import PentestLab from './PentestLab';
 
 const INITIAL_SCRIPTS: GhostScript[] = [
   {
@@ -906,6 +907,7 @@ const INITIAL_SCRIPTS: GhostScript[] = [
 ];
 
 export default function App() {
+  const [mode, setMode] = useState<'proxy' | 'pentest'>('proxy');
   const [scripts, setScripts] = useState<GhostScript[]>(() => {
     const saved = localStorage.getItem('ghost_scripts');
     return saved ? JSON.parse(saved) : INITIAL_SCRIPTS;
@@ -1010,6 +1012,20 @@ export default function App() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <div className="flex bg-ghost-border/30 p-1 rounded-sm mr-4 border border-ghost-border">
+            <button 
+              onClick={() => setMode('proxy')}
+              className={`px-3 py-1 text-[10px] font-bold rounded-sm transition-all ${mode === 'proxy' ? 'bg-ghost-neon text-ghost-bg' : 'text-ghost-muted hover:text-ghost-text'}`}
+            >
+              GHOST_PROXY
+            </button>
+            <button 
+              onClick={() => setMode('pentest')}
+              className={`px-3 py-1 text-[10px] font-bold rounded-sm transition-all ${mode === 'pentest' ? 'bg-emerald-500 text-zinc-950' : 'text-ghost-muted hover:text-ghost-text'}`}
+            >
+              PENTEST_LAB
+            </button>
+          </div>
           <button 
             onClick={() => setIsStealthMode(!isStealthMode)}
             className={`flex items-center gap-2 px-3 py-1 border rounded text-[10px] font-bold transition-all ${isStealthMode ? 'bg-ghost-neon text-ghost-bg border-ghost-neon shadow-[0_0_10px_rgba(0,255,0,0.3)]' : 'border-ghost-border text-ghost-muted hover:border-ghost-muted/50'}`}
@@ -1027,216 +1043,224 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar: Scripts List */}
-        <aside className="w-80 border-right border-ghost-border flex flex-col bg-ghost-bg">
-          <div className="p-4 border-b border-ghost-border flex justify-between items-center">
-            <h2 className="text-xs font-bold text-ghost-muted uppercase tracking-widest flex items-center gap-2">
-              <Terminal className="w-4 h-4" />
-              Active_Intercepts
-            </h2>
-            <button 
-              onClick={createNewScript}
-              className="p-1 hover:bg-ghost-neon hover:text-ghost-bg border border-ghost-border rounded transition-all group"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
-            {scripts.map(script => (
-              <div 
-                key={script.id}
-                onClick={() => setSelectedScriptId(script.id)}
-                className={`group p-4 border-b border-ghost-border transition-all cursor-pointer relative overflow-hidden ${selectedScriptId === script.id ? 'bg-ghost-card' : 'hover:bg-ghost-card/50'}`}
-              >
-                {selectedScriptId === script.id && (
-                  <motion.div 
-                    layoutId="active-indicator"
-                    className="absolute left-0 top-0 bottom-0 w-1 bg-ghost-neon shadow-[0_0_10px_rgba(0,255,0,0.5)]" 
-                  />
-                )}
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className={`text-sm font-bold truncate ${script.enabled ? 'text-ghost-text' : 'text-ghost-muted line-through'}`}>
-                    {script.name}
-                  </h3>
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); deleteScript(script.id); }}
-                      className="p-1 hover:text-red-500 transition-colors"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-[9px] text-ghost-muted font-mono uppercase truncate opacity-75">
-                    {script.targetUrl}
-                  </span>
-                  <div className={`w-2 h-2 rounded-full ${script.enabled ? 'bg-ghost-neon' : 'bg-red-500'} shadow-[0_0_5px_currentColor]`} />
-                </div>
+      {mode === 'proxy' ? (
+        <>
+          <main className="flex flex-1 overflow-hidden">
+            {/* Left Sidebar: Scripts List */}
+            <aside className="w-80 border-right border-ghost-border flex flex-col bg-ghost-bg">
+              <div className="p-4 border-b border-ghost-border flex justify-between items-center">
+                <h2 className="text-xs font-bold text-ghost-muted uppercase tracking-widest flex items-center gap-2">
+                  <Terminal className="w-4 h-4" />
+                  Active_Intercepts
+                </h2>
+                <button 
+                  onClick={createNewScript}
+                  className="p-1 hover:bg-ghost-neon hover:text-ghost-bg border border-ghost-border rounded transition-all group"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
               </div>
-            ))}
-          </div>
-        </aside>
-
-        {/* Center: IDE / Editor */}
-        <section className="flex-1 flex flex-col bg-ghost-bg font-mono">
-          {selectedScript ? (
-            <div className="flex flex-col h-full">
-              <div className="p-3 border-b border-ghost-border flex justify-between items-center bg-ghost-card">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 border border-ghost-border rounded-sm">
-                    <Code2 className="w-4 h-4 text-ghost-neon" />
-                  </div>
-                  <div>
-                    <input 
-                      type="text"
-                      value={selectedScript.name}
-                      onChange={(e) => updateScript(selectedScript.id, { name: e.target.value })}
-                      className="bg-transparent border-none focus:ring-0 text-sm font-bold text-ghost-text p-0 h-auto"
-                    />
-                    <div className="flex items-center gap-2 mt-1">
-                      <Globe className="w-3 h-3 text-ghost-muted" />
-                      <input 
-                         type="text"
-                         value={selectedScript.targetUrl}
-                         onChange={(e) => updateScript(selectedScript.id, { targetUrl: e.target.value })}
-                         className="bg-transparent border-none focus:ring-0 text-[10px] text-ghost-muted p-0 h-auto w-40"
+              
+              <div className="flex-1 overflow-y-auto custom-scrollbar">
+                {scripts.map(script => (
+                  <div 
+                    key={script.id}
+                    onClick={() => setSelectedScriptId(script.id)}
+                    className={`group p-4 border-b border-ghost-border transition-all cursor-pointer relative overflow-hidden ${selectedScriptId === script.id ? 'bg-ghost-card' : 'hover:bg-ghost-card/50'}`}
+                  >
+                    {selectedScriptId === script.id && (
+                      <motion.div 
+                        layoutId="active-indicator"
+                        className="absolute left-0 top-0 bottom-0 w-1 bg-ghost-neon shadow-[0_0_10px_rgba(0,255,0,0.5)]" 
                       />
+                    )}
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className={`text-sm font-bold truncate ${script.enabled ? 'text-ghost-text' : 'text-ghost-muted line-through'}`}>
+                        {script.name}
+                      </h3>
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); deleteScript(script.id); }}
+                          className="p-1 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-[9px] text-ghost-muted font-mono uppercase truncate opacity-75">
+                        {script.targetUrl}
+                      </span>
+                      <div className={`w-2 h-2 rounded-full ${script.enabled ? 'bg-ghost-neon' : 'bg-red-500'} shadow-[0_0_5px_currentColor]`} />
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <button 
-                    onClick={() => updateScript(selectedScript.id, { enabled: !selectedScript.enabled })}
-                    className={`flex items-center gap-2 px-3 py-1 border rounded text-[10px] font-bold transition-all ${selectedScript.enabled ? 'border-ghost-neon text-ghost-neon bg-ghost-neon/5' : 'border-ghost-muted text-ghost-muted'}`}
-                  >
-                    <AnimatePresence mode="wait">
-                      {selectedScript.enabled ? (
-                        <motion.span key="on" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>ONLINE</motion.span>
-                      ) : (
-                        <motion.span key="off" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>OFFLINE</motion.span>
-                      )}
-                    </AnimatePresence>
-                  </button>
-                  <button className="flex items-center gap-2 px-3 py-1 bg-ghost-neon text-ghost-bg rounded text-[10px] font-bold hover:brightness-110 transition-all">
-                    <Zap className="w-3 h-3" />
-                    DEPLOY_AUGMENTATION
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex-1 relative ghost-scanner">
-                <div className="absolute left-0 top-0 bottom-0 w-12 bg-ghost-card/50 flex flex-col items-center pt-4 text-[10px] text-ghost-muted border-r border-ghost-border pointer-events-none">
-                  {Array.from({ length: 40 }).map((_, i) => (
-                    <div key={i} className="mb-0.5">{i + 1}</div>
-                  ))}
-                </div>
-                <textarea 
-                  value={selectedScript.code}
-                  onChange={(e) => updateScript(selectedScript.id, { code: e.target.value })}
-                  className="w-full h-full bg-transparent border-none focus:ring-0 resize-none p-4 pl-16 text-ghost-neon scrollbar-hide font-mono text-sm leading-relaxed"
-                  spellCheck={false}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="flex-1 flex flex-col items-center justify-center opacity-20 select-none">
-               <Ghost className="w-24 h-24 mb-4" />
-               <p className="text-xs uppercase tracking-[0.4em]">Initialize_Link_To_Proceed</p>
-            </div>
-          )}
-        </section>
-
-        {/* Right Sidebar: Ghost Agent */}
-        <aside className={`transition-all duration-300 ease-in-out border-l border-ghost-border flex flex-col bg-ghost-card ${isAgentActive ? 'w-96' : 'w-12 items-center'}`}>
-          <div className={`p-4 flex items-center ${isAgentActive ? 'justify-between' : 'justify-center cursor-pointer'}`} onClick={() => !isAgentActive && setIsAgentActive(true)}>
-            {isAgentActive ? (
-               <>
-                 <h2 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-ghost-neon">
-                   <Puzzle className="w-4 h-4 animate-spin-slow" />
-                   GHOST_AGENT
-                 </h2>
-                 <button onClick={() => setIsAgentActive(false)} className="p-1 hover:bg-ghost-border rounded">
-                    <ChevronRight className="w-4 h-4 translate-x-0.5" />
-                 </button>
-               </>
-            ) : (
-               <Puzzle className="w-6 h-6 text-ghost-neon hover:scale-110 transition-transform" />
-            )}
-          </div>
-
-          {isAgentActive && (
-            <>
-              <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar">
-                {agentMessages.map((msg, i) => (
-                  <motion.div 
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    key={i} 
-                    className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
-                  >
-                    <div className={`max-w-[85%] p-3 rounded-sm text-[11px] leading-relaxed ${msg.role === 'user' ? 'bg-ghost-neon/10 border border-ghost-neon/30 text-ghost-neon' : 'bg-ghost-border/50 border border-ghost-border text-ghost-text'}`}>
-                      {msg.content}
-                    </div>
-                    <span className="text-[8px] text-ghost-muted mt-1 uppercase tracking-tighter">
-                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                    </span>
-                  </motion.div>
                 ))}
-                {isGenerating && (
-                  <div className="flex gap-1 items-center p-3 text-ghost-neon opacity-50 bg-ghost-neon/5 rounded-sm">
-                    <span className="w-1 h-1 bg-ghost-neon rounded-full animate-bounce" />
-                    <span className="w-1 h-1 bg-ghost-neon rounded-full animate-bounce [animation-delay:0.2s]" />
-                    <span className="w-1 h-1 bg-ghost-neon rounded-full animate-bounce [animation-delay:0.4s]" />
-                    <span className="text-[9px] uppercase ml-2 tracking-widest">Processing_Data</span>
+              </div>
+            </aside>
+
+            {/* Center: IDE / Editor */}
+            <section className="flex-1 flex flex-col bg-ghost-bg font-mono">
+              {selectedScript ? (
+                <div className="flex flex-col h-full">
+                  <div className="p-3 border-b border-ghost-border flex justify-between items-center bg-ghost-card">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 border border-ghost-border rounded-sm">
+                        <Code2 className="w-4 h-4 text-ghost-neon" />
+                      </div>
+                      <div>
+                        <input 
+                          type="text"
+                          value={selectedScript.name}
+                          onChange={(e) => updateScript(selectedScript.id, { name: e.target.value })}
+                          className="bg-transparent border-none focus:ring-0 text-sm font-bold text-ghost-text p-0 h-auto"
+                        />
+                        <div className="flex items-center gap-2 mt-1">
+                          <Globe className="w-3 h-3 text-ghost-muted" />
+                          <input 
+                             type="text"
+                             value={selectedScript.targetUrl}
+                             onChange={(e) => updateScript(selectedScript.id, { targetUrl: e.target.value })}
+                             className="bg-transparent border-none focus:ring-0 text-[10px] text-ghost-muted p-0 h-auto w-40"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <button 
+                        onClick={() => updateScript(selectedScript.id, { enabled: !selectedScript.enabled })}
+                        className={`flex items-center gap-2 px-3 py-1 border rounded text-[10px] font-bold transition-all ${selectedScript.enabled ? 'border-ghost-neon text-ghost-neon bg-ghost-neon/5' : 'border-ghost-muted text-ghost-muted'}`}
+                      >
+                        <AnimatePresence mode="wait">
+                          {selectedScript.enabled ? (
+                            <motion.span key="on" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>ONLINE</motion.span>
+                          ) : (
+                            <motion.span key="off" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>OFFLINE</motion.span>
+                          )}
+                        </AnimatePresence>
+                      </button>
+                      <button className="flex items-center gap-2 px-3 py-1 bg-ghost-neon text-ghost-bg rounded text-[10px] font-bold hover:brightness-110 transition-all">
+                        <Zap className="w-3 h-3" />
+                        DEPLOY_AUGMENTATION
+                      </button>
+                    </div>
                   </div>
+
+                  <div className="flex-1 relative ghost-scanner">
+                    <div className="absolute left-0 top-0 bottom-0 w-12 bg-ghost-card/50 flex flex-col items-center pt-4 text-[10px] text-ghost-muted border-r border-ghost-border pointer-events-none">
+                      {Array.from({ length: 40 }).map((_, i) => (
+                        <div key={i} className="mb-0.5">{i + 1}</div>
+                      ))}
+                    </div>
+                    <textarea 
+                      value={selectedScript.code}
+                      onChange={(e) => updateScript(selectedScript.id, { code: e.target.value })}
+                      className="w-full h-full bg-transparent border-none focus:ring-0 resize-none p-4 pl-16 text-ghost-neon scrollbar-hide font-mono text-sm leading-relaxed"
+                      spellCheck={false}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center opacity-20 select-none">
+                   <Ghost className="w-24 h-24 mb-4" />
+                   <p className="text-xs uppercase tracking-[0.4em]">Initialize_Link_To_Proceed</p>
+                </div>
+              )}
+            </section>
+
+            {/* Right Sidebar: Ghost Agent */}
+            <aside className={`transition-all duration-300 ease-in-out border-l border-ghost-border flex flex-col bg-ghost-card ${isAgentActive ? 'w-96' : 'w-12 items-center'}`}>
+              <div className={`p-4 flex items-center ${isAgentActive ? 'justify-between' : 'justify-center cursor-pointer'}`} onClick={() => !isAgentActive && setIsAgentActive(true)}>
+                {isAgentActive ? (
+                   <>
+                     <h2 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-ghost-neon">
+                       <Puzzle className="w-4 h-4 animate-spin-slow" />
+                       GHOST_AGENT
+                     </h2>
+                     <button onClick={() => setIsAgentActive(false)} className="p-1 hover:bg-ghost-border rounded">
+                        <ChevronRight className="w-4 h-4 translate-x-0.5" />
+                     </button>
+                   </>
+                ) : (
+                   <Puzzle className="w-6 h-6 text-ghost-neon hover:scale-110 transition-transform" />
                 )}
-                <div ref={messagesEndRef} />
               </div>
 
-              <div className="p-4 border-t border-ghost-border">
-                <div className="relative">
-                  <textarea 
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
-                    placeholder="Request augmentation..."
-                    className="w-full bg-ghost-bg border border-ghost-border rounded p-3 pr-10 text-[11px] focus:border-ghost-neon focus:ring-0 h-20 resize-none transition-all placeholder:opacity-30"
-                  />
-                  <button 
-                    onClick={handleSendMessage}
-                    disabled={!input.trim() || isGenerating}
-                    className="absolute bottom-3 right-3 text-ghost-muted hover:text-ghost-neon transition-colors disabled:opacity-30"
-                  >
-                    <Send className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="mt-2 flex justify-between text-[8px] text-ghost-muted uppercase opacity-50 font-mono">
-                   <span>SECURE_LINK</span>
-                   <span>LATENCY: 12ms</span>
-                </div>
-              </div>
-            </>
-          )}
-        </aside>
-      </main>
+              {isAgentActive && (
+                <>
+                  <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar">
+                    {agentMessages.map((msg, i) => (
+                      <motion.div 
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        key={i} 
+                        className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
+                      >
+                        <div className={`max-w-[85%] p-3 rounded-sm text-[11px] leading-relaxed ${msg.role === 'user' ? 'bg-ghost-neon/10 border border-ghost-neon/30 text-ghost-neon' : 'bg-ghost-border/50 border border-ghost-border text-ghost-text'}`}>
+                          {msg.content}
+                        </div>
+                        <span className="text-[8px] text-ghost-muted mt-1 uppercase tracking-tighter">
+                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        </span>
+                      </motion.div>
+                    ))}
+                    {isGenerating && (
+                      <div className="flex gap-1 items-center p-3 text-ghost-neon opacity-50 bg-ghost-neon/5 rounded-sm">
+                        <span className="w-1 h-1 bg-ghost-neon rounded-full animate-bounce" />
+                        <span className="w-1 h-1 bg-ghost-neon rounded-full animate-bounce [animation-delay:0.2s]" />
+                        <span className="w-1 h-1 bg-ghost-neon rounded-full animate-bounce [animation-delay:0.4s]" />
+                        <span className="text-[9px] uppercase ml-2 tracking-widest">Processing_Data</span>
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
 
-      <footer className="h-6 bg-ghost-card border-t border-ghost-border flex items-center justify-between px-4 text-[9px] text-ghost-muted uppercase tracking-tighter select-none font-mono">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 bg-ghost-neon rounded-full" />
-            NODE: PHOENIX_PRIME
-          </span>
-          <span>UPTIME: 12:44:02</span>
+                  <div className="p-4 border-t border-ghost-border">
+                    <div className="relative">
+                      <textarea 
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
+                        placeholder="Request augmentation..."
+                        className="w-full bg-ghost-bg border border-ghost-border rounded p-3 pr-10 text-[11px] focus:border-ghost-neon focus:ring-0 h-20 resize-none transition-all placeholder:opacity-30"
+                      />
+                      <button 
+                        onClick={handleSendMessage}
+                        disabled={!input.trim() || isGenerating}
+                        className="absolute bottom-3 right-3 text-ghost-muted hover:text-ghost-neon transition-colors disabled:opacity-30"
+                      >
+                        <Send className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="mt-2 flex justify-between text-[8px] text-ghost-muted uppercase opacity-50 font-mono">
+                       <span>SECURE_LINK</span>
+                       <span>LATENCY: 12ms</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </aside>
+          </main>
+
+          <footer className="h-6 bg-ghost-card border-t border-ghost-border flex items-center justify-between px-4 text-[9px] text-ghost-muted uppercase tracking-tighter select-none font-mono">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 bg-ghost-neon rounded-full" />
+                NODE: PHOENIX_PRIME
+              </span>
+              <span>UPTIME: 12:44:02</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span>PACKETS_INTERCEPTED: 1,492</span>
+              <span>ENCRYPTION: AES-256_GHOST</span>
+              <span className="text-ghost-neon">© GHOST_IN_THE_PROMPT</span>
+            </div>
+          </footer>
+        </>
+      ) : (
+        <div className="flex-1 overflow-hidden">
+          <PentestLab />
         </div>
-        <div className="flex items-center gap-4">
-          <span>PACKETS_INTERCEPTED: 1,492</span>
-          <span>ENCRYPTION: AES-256_GHOST</span>
-          <span className="text-ghost-neon">© GHOST_IN_THE_PROMPT</span>
-        </div>
-      </footer>
+      )}
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {

@@ -3,11 +3,34 @@
 </p>
 
 # GHOST_PROXY
-High-fidelity UserScript workshop and offensive security sandbox. — v1.0
+High-fidelity UserScript workshop and offensive security sandbox. — v2.0 (Unified)
 
 > "The hardest vulnerabilities aren't in the code, they are in the assumptions."
 
-**GHOST_PROXY** is a centralized, AI-integrated environment to develop, test, and deploy site augmentations that slice through modern detection layers.
+**GHOST_PROXY** is a centralized, AI-integrated environment to develop, test, and deploy site augmentations and correlate them against advanced enterprise threat simulations.
+
+---
+
+## Dual-Core Architecture
+
+The system now operates as a unified platform with two distinct operational modes:
+
+### 1. [[GHOST_PROXY_CORE]]
+Your primary workshop for intercept-based web augmentation.
+- **[[GHOST_AGENT]]**: Integrated **Gemini 3.1 Pro** link for surgical script hardening.
+- **[[STEALTH_SYSTEM]]**: Global environment obfuscation (Shadow DOM + Proxy Masking).
+- **[[ACTIVE_PROTOCOLS]]**: A library of 2026-standard payloads (Hydra Polymorph, E-Comm Auditor, Secret Scanners).
+
+### 2. [[PENTEST_LAB_COMMAND]]
+A new, high-fidelity simulation environment for enterprise-scale risk analysis and adversarial emulation.
+- **[[PROMPT_INTERCEPT]]**: Real-time analysis of GenAI prompts to detect exfiltration of PII, SSNs, and corporate secrets.
+- **[[OFFENSIVE_TOOLS]]**:
+  - **Threat Simulator**: Emulates **Worldleaks** and **ANTS Identity Leak** patterns using neural-speed audits.
+  - **Threat Intel Feed**: Real-time briefing on emerging TTPs like **RustyRocket** and **Cloudflare IP Rotation**.
+- **[[STRATEGIC_DEFENSE]]**:
+  - **Purple Command Center**: Correlation of adversarial techniques with automated governance.
+  - **DNS Scrutiny**: High-level inspection for data sovereignty and shadow SaaS leaks.
+  - **Data Lineage**: Visualizing the flow of sensitive data from the enterprise to AI providers.
 
 ---
 

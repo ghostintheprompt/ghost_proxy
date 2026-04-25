@@ -19,3 +19,20 @@ export interface GhostAgentMessage {
   content: string;
   timestamp: number;
 }
+
+export interface RiskAnalysis {
+  riskScore: number; // 0-100
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  detectedEntities: {
+    type: string;
+    value: string;
+    description: string;
+  }[];
+  policyViolation: string | null;
+  coachingMessage: string;
+  dataLineage: {
+    source: string;
+    destination: string;
+    sensitivity: string;
+  }[];
+}
