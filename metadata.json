@@ -1,6 +1,10 @@
 {
   "name": "Ghost Proxy",
-  "description": "An intuitive, AI-powered script management workshop for augmenting the digital landscape.",
-  "requestFramePermissions": [],
-  "majorCapabilities": []
+  "description": "High-fidelity UserScript workshop and offensive security sandbox for 2026-standard research.",
+  "majorCapabilities": [
+    "AI-Augmented Script Hardening",
+    "Neural Exploit Simulation",
+    "macOS PF Firewall Orchestration",
+    "Enterprise Risk & GRC Audit"
+  ]
 }

@@ -24,6 +24,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { GhostScript, GhostAgentMessage } from './types';
 import { generateGhostScript } from './services/geminiService';
 import PentestLab from './PentestLab';
+import GitHubUpdateChecker from './components/GitHubUpdateChecker';
 
 const INITIAL_SCRIPTS: GhostScript[] = [
   {
@@ -711,7 +712,7 @@ const INITIAL_SCRIPTS: GhostScript[] = [
         \`;
 
         overlay.innerHTML = \`
-            <h2 style="margin-top: 0; color: #d32f2f;">⚠️ Session Timeout</h2>
+            <h2 style="margin-top: 0; color: #d32f2f;">Session Timeout</h2>
             <p>Your secure session has expired for security reasons. Please re-authenticate to continue.</p>
             <input type="password" placeholder="Current Password" style="width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px;">
             <button id="ghost-spoof-btn" style="width: 100%; padding: 12px; background: #d32f2f; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">RESTORE SESSION</button>
@@ -1012,16 +1013,17 @@ export default function App() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <GitHubUpdateChecker />
           <div className="flex bg-ghost-border/30 p-1 rounded-sm mr-4 border border-ghost-border">
             <button 
               onClick={() => setMode('proxy')}
-              className={`px-3 py-1 text-[10px] font-bold rounded-sm transition-all ${mode === 'proxy' ? 'bg-ghost-neon text-ghost-bg' : 'text-ghost-muted hover:text-ghost-text'}`}
+              className={`px-3 py-1 text-[10px] font-bold rounded-sm transition-all \${mode === 'proxy' ? 'bg-ghost-neon text-ghost-bg' : 'text-ghost-muted hover:text-ghost-text'}`}
             >
               GHOST_PROXY
             </button>
             <button 
               onClick={() => setMode('pentest')}
-              className={`px-3 py-1 text-[10px] font-bold rounded-sm transition-all ${mode === 'pentest' ? 'bg-emerald-500 text-zinc-950' : 'text-ghost-muted hover:text-ghost-text'}`}
+              className={`px-3 py-1 text-[10px] font-bold rounded-sm transition-all \${mode === 'pentest' ? 'bg-emerald-500 text-zinc-950' : 'text-ghost-muted hover:text-ghost-text'}`}
             >
               PENTEST_LAB
             </button>
@@ -1138,9 +1140,15 @@ export default function App() {
                           )}
                         </AnimatePresence>
                       </button>
-                      <button className="flex items-center gap-2 px-3 py-1 bg-ghost-neon text-ghost-bg rounded text-[10px] font-bold hover:brightness-110 transition-all">
-                        <Zap className="w-3 h-3" />
-                        DEPLOY_AUGMENTATION
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedScript.code);
+                          alert('PAYLOAD_EXPORTED: Script copied to clipboard for field deployment on target sites.');
+                        }}
+                        className="flex items-center gap-2 px-3 py-1 bg-ghost-neon text-ghost-bg rounded text-[10px] font-bold hover:brightness-110 transition-all"
+                      >
+                        <Zap size={3} className="w-3 h-3" />
+                        DEPLOY_TO_FIELD
                       </button>
                     </div>
                   </div>
@@ -1252,7 +1260,7 @@ export default function App() {
             <div className="flex items-center gap-4">
               <span>PACKETS_INTERCEPTED: 1,492</span>
               <span>ENCRYPTION: AES-256_GHOST</span>
-              <span className="text-ghost-neon">© GHOST_IN_THE_PROMPT</span>
+              <span className="text-ghost-neon">Built by MDRN Corp — mdrn.app</span>
             </div>
           </footer>
         </>
@@ -1282,4 +1290,5 @@ export default function App() {
       `}</style>
     </div>
   );
+}
 }
