@@ -53,4 +53,3 @@ See GHOST_GUIDE.md for full technical documentation on every module.
 
 ---
 Built by **MDRN Corp** — [mdrn.app](https://mdrn.app)
-*Article: [Inside Ghost Proxy](https://ghostintheprompt.com/articles/ghost-proxy-2026)*
