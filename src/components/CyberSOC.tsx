@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Shield, 
   AlertTriangle, 
   Search, 
   CheckCircle, 
-  XCircle, 
   Zap, 
   Activity,
-  Server,
-  Database,
-  Globe,
-  Lock,
   Eye,
   Settings,
   Terminal,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  Database,
+  Cpu,
+  Binary
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -29,38 +27,33 @@ interface Alert {
   status: 'Open' | 'Triaged' | 'Resolved';
   description: string;
   remediation: string;
+  memoryDump?: string;
+  threatActor?: string;
 }
 
 const INITIAL_ALERTS: Alert[] = [
   {
-    id: 'a1',
+    id: 'INC-2026-001',
     timestamp: Date.now() - 120000,
     severity: 'Critical',
     title: 'LSASS Memory Dump Detected',
     source: 'Endpoint: SRV-PROD-01',
     status: 'Open',
-    description: 'Suspicious process attempted to read LSASS memory, possibly to harvest credentials.',
-    remediation: 'Isolate host, reset credentials, and investigate source process.'
+    description: 'A highly obfuscated process bypassed EDR and requested PROCESS_VM_READ access to lsass.exe.',
+    remediation: 'Isolate host, enforce credential rotation, and deploy automated memory forensics playbook.',
+    threatActor: 'APT-GHOST-9',
+    memoryDump: '0x0000: 4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00  MZ..............\n0x0010: B8 00 00 00 00 00 00 00 40 00 00 00 00 00 00 00  ........@.......\n0x0020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................\n0x0030: 00 00 00 00 00 00 00 00 00 00 00 00 E8 00 00 00  ................\n0x0040: 0E 1F BA 0E 00 B4 09 CD 21 B8 01 4C CD 21 54 68  ........!..L.!Th'
   },
   {
-    id: 'a2',
+    id: 'INC-2026-002',
     timestamp: Date.now() - 300000,
     severity: 'High',
-    title: 'Unauthorized S3 Bucket Modification',
-    source: 'AWS: S3-GHOST-PROD',
+    title: 'Neural WAF Bypass Attempt',
+    source: 'Edge-Gateway-04',
     status: 'Open',
-    description: 'Public access block was disabled for a sensitive backup bucket.',
-    remediation: 'Re-enable Public Access Block and audit IAM permissions.'
-  },
-  {
-    id: 'a3',
-    timestamp: Date.now() - 600000,
-    severity: 'Medium',
-    title: 'Potential SQL Injection Attempt',
-    source: 'WAF: Edge-Gateway-01',
-    status: 'Triaged',
-    description: 'Multiple requests with SQL syntax detected targeting /api/v1/search.',
-    remediation: 'Review application code for proper query parameterization.'
+    description: 'Anomalous semantic sharding detected in incoming HTTP payloads targeting the Auth API.',
+    remediation: 'Update WAF semantic rules engine and block originating ASNs temporarily.',
+    threatActor: 'Unknown_Automated'
   }
 ];
 
@@ -83,7 +76,7 @@ export default function CyberSOC() {
       setAlerts(prev => prev.map(a => a.id === id ? { ...a, status: 'Resolved' } : a));
       if (selectedAlert?.id === id) setSelectedAlert(prev => prev ? { ...prev, status: 'Resolved' } : null);
       setIsHardening(false);
-    }, 2000);
+    }, 3000);
   };
 
   const runAiAnalysis = () => {
@@ -94,11 +87,9 @@ export default function CyberSOC() {
     setTimeout(() => {
       let insight = "";
       if (selectedAlert.title.includes('LSASS')) {
-        insight = "NEURAL_INSIGHT: This attack correlates with GhostLink malware activity. The attacker is likely using a modified procdump utility with a randomized hash to evade signature-based detection. Recommend enabling LSA Protection and monitoring for Event 4656 on the LSASS object.";
-      } else if (selectedAlert.title.includes('S3')) {
-        insight = "NEURAL_INSIGHT: Automated detection suggests this modification was performed via a stolen session token rather than long-term IAM keys. The IP origin is a known residential proxy network. Immediate session invalidation is recommended.";
+        insight = "NEURAL_CORRELATION: The memory dump signature indicates a custom variant of 'Mimikatz' packed with an LLM-mutated obfuscator. Threat Actor [APT-GHOST-9] frequently uses this to establish stealth C2. Automated generation of an IOC containment script is recommended.";
       } else {
-        insight = "NEURAL_INSIGHT: Signature analysis indicates an automated scanner testing for IDOR vulnerabilities. While currently blocked, the pattern suggests a slow-and-low enumeration strategy. Recommend implementing adaptive rate limiting at the WAF layer.";
+        insight = "NEURAL_CORRELATION: Semantic sharding detected. The attacker is splitting a SQLi payload across multiple requests to keep entropy low. Recommendation: Switch WAF to Stateful Sequence Inspection.";
       }
       setAiAnalysis(insight);
       setIsAiAnalyzing(false);
@@ -107,81 +98,79 @@ export default function CyberSOC() {
 
   const filteredAlerts = alerts.filter(a => 
     a.title.toLowerCase().includes(filter.toLowerCase()) || 
-    a.source.toLowerCase().includes(filter.toLowerCase())
+    a.id.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
     <div className="flex flex-col h-full gap-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-zinc-100 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-zinc-100 flex items-center gap-3">
             <Shield className="text-blue-500" />
-            Cyber SOC CommandCenter
+            Cyber SOC: Neural Defense Center
           </h2>
-          <p className="text-zinc-400 text-sm">Real-time threat monitoring and incident response interface.</p>
+          <p className="text-zinc-400 text-sm font-mono uppercase tracking-tighter">Real-Time Threat Correlation & Automated Remediation</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-md">
-            <Activity className="w-4 h-4 text-green-500" />
-            <span className="text-[10px] font-bold text-zinc-300 uppercase">System Status: Nominal</span>
+          <div className="flex items-center gap-2 px-4 py-1.5 bg-zinc-900 border border-zinc-800 rounded-md">
+            <Activity className="w-4 h-4 text-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">Grid_Secure</span>
           </div>
-          <button className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors">
-            <Settings className="w-4 h-4 text-zinc-400" />
-          </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
+        {/* Alert Stream */}
         <div className="lg:col-span-4 flex flex-col gap-4 bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-          <div className="p-4 border-b border-zinc-800 bg-zinc-900/50">
+          <div className="p-4 border-b border-zinc-800 bg-black/40">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
               <input 
                 type="text"
-                placeholder="Filter alerts..."
+                placeholder="Filter Neural Stream..."
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-md py-2 pl-10 pr-4 text-xs focus:border-blue-500 outline-none transition-all"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg py-2.5 pl-10 pr-4 text-xs font-mono focus:border-blue-500 outline-none transition-all shadow-inner"
               />
             </div>
           </div>
           
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
             {filteredAlerts.map(alert => (
               <div 
                 key={alert.id}
                 onClick={() => { setSelectedAlert(alert); setAiAnalysis(null); }}
                 className={cn(
-                  "p-4 border-b border-zinc-800 cursor-pointer transition-all hover:bg-zinc-800/50",
-                  selectedAlert?.id === alert.id ? "bg-zinc-800 border-l-4 border-l-blue-500" : ""
+                  "p-4 mb-2 rounded-lg border cursor-pointer transition-all hover:bg-zinc-800/80 group",
+                  selectedAlert?.id === alert.id ? "bg-zinc-800 border-blue-500 shadow-lg" : "bg-zinc-950 border-zinc-800"
                 )}
               >
-                <div className="flex justify-between items-start mb-2">
+                <div className="flex justify-between items-center mb-3">
                   <span className={cn(
-                    "text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-widest",
-                    alert.severity === 'Critical' ? "bg-red-500/20 text-red-400" :
-                    alert.severity === 'High' ? "bg-orange-500/20 text-orange-400" :
-                    "bg-yellow-500/20 text-yellow-400"
+                    "text-[8px] font-black px-2 py-1 rounded uppercase tracking-widest",
+                    alert.severity === 'Critical' ? "bg-red-500/20 text-red-400 border border-red-500/30" :
+                    alert.severity === 'High' ? "bg-orange-500/20 text-orange-400 border border-orange-500/30" :
+                    "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
                   )}>
                     {alert.severity}
                   </span>
-                  <span className="text-[9px] text-zinc-500 font-mono">
-                    {new Date(alert.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <span className="text-[9px] text-zinc-500 font-mono tracking-tighter">
+                    {new Date(alert.timestamp).toLocaleTimeString()}
                   </span>
                 </div>
-                <h3 className="text-sm font-bold text-zinc-100 truncate">{alert.title}</h3>
-                <p className="text-[11px] text-zinc-500 mt-1 truncate">{alert.source}</p>
-                <div className="flex items-center justify-between mt-3">
+                <h3 className="text-sm font-bold text-zinc-100 group-hover:text-blue-400 transition-colors mb-1">{alert.title}</h3>
+                <p className="text-[10px] font-mono text-zinc-500 mb-3">{alert.id}</p>
+                <div className="flex items-center justify-between pt-3 border-t border-zinc-800/50">
                    <div className={cn(
-                     "text-[9px] font-bold uppercase flex items-center gap-1",
+                     "text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5",
                      alert.status === 'Open' ? "text-red-500" :
                      alert.status === 'Triaged' ? "text-yellow-500" :
-                     "text-green-500"
+                     "text-emerald-500"
                    )}>
                      <div className={cn("w-1.5 h-1.5 rounded-full", 
-                        alert.status === 'Open' ? "bg-red-500 animate-pulse" :
+                        alert.status === 'Open' ? "bg-red-500 animate-pulse shadow-[0_0_5px_#ef4444]" :
                         alert.status === 'Triaged' ? "bg-yellow-500" :
-                        "bg-green-500"
+                        "bg-emerald-500"
                      )} />
                      {alert.status}
                    </div>
@@ -191,78 +180,75 @@ export default function CyberSOC() {
           </div>
         </div>
 
+        {/* Detail View */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           {selectedAlert ? (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 h-full flex flex-col">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 flex-1 flex flex-col relative overflow-y-auto custom-scrollbar">
               <div className="flex justify-between items-start mb-8">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <span className={cn(
-                      "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
-                      selectedAlert.severity === 'Critical' ? "bg-red-500/20 text-red-400 border border-red-500/30" :
-                      selectedAlert.severity === 'High' ? "bg-orange-500/20 text-orange-400 border border-orange-500/30" :
-                      "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+                      "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+                      selectedAlert.severity === 'Critical' ? "bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)]" :
+                      selectedAlert.severity === 'High' ? "bg-orange-500 text-white" :
+                      "bg-yellow-500 text-black"
                     )}>
-                      {selectedAlert.severity} PRIORITY
+                      {selectedAlert.severity}_PRIORITY
                     </span>
                     <span className="text-zinc-500 text-xs font-mono">{selectedAlert.id}</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-zinc-100">{selectedAlert.title}</h2>
-                  <p className="text-zinc-400 text-sm mt-1">{selectedAlert.source}</p>
+                  <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase mb-2">{selectedAlert.title}</h2>
+                  <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                    <span className="flex items-center gap-1"><Database size={12} /> {selectedAlert.source}</span>
+                    <span className="flex items-center gap-1 text-purple-400"><Cpu size={12} /> {selectedAlert.threatActor}</span>
+                  </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                    <button 
                      onClick={runAiAnalysis}
                      disabled={isAiAnalyzing}
-                     className="flex items-center gap-2 px-4 py-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-md text-xs font-bold hover:bg-purple-500/20 transition-all disabled:opacity-50"
+                     className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 shadow-lg shadow-purple-600/20"
                    >
-                     {isAiAnalyzing ? <Sparkles size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                     AI_ANALYZE
+                     {isAiAnalyzing ? <RefreshCw size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                     AI_CORRELATION
                    </button>
                    {selectedAlert.status === 'Open' && (
                      <button 
                        onClick={() => handleTriage(selectedAlert.id)}
-                       className="flex items-center gap-2 px-4 py-2 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-md text-xs font-bold hover:bg-yellow-500/20 transition-all"
+                       className="flex items-center gap-2 px-5 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-black rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
                      >
-                       <Eye size={14} />
-                       TRIAGE
+                       <Eye size={14} /> TRIAGE
                      </button>
                    )}
                    {selectedAlert.status !== 'Resolved' && (
                      <button 
                        onClick={() => handleResolve(selectedAlert.id)}
                        disabled={isHardening}
-                       className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md text-xs font-bold hover:bg-blue-600 transition-all disabled:opacity-50"
+                       className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 shadow-lg shadow-blue-600/20"
                      >
-                       {isHardening ? <Zap size={14} className="animate-spin" /> : <Shield size={14} />}
-                       {isHardening ? 'HARDENING...' : 'RESOLVE'}
+                       {isHardening ? <RefreshCw size={14} className="animate-spin" /> : <Shield size={14} />}
+                       {isHardening ? 'GENERATING_PATCH...' : 'ISOLATE_&_REMEDIATE'}
                      </button>
                    )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <AlertTriangle size={12} />
-                      Event Description
-                    </h4>
-                    <p className="text-sm text-zinc-300 leading-relaxed bg-zinc-950/50 p-4 rounded-lg border border-zinc-800">
-                      {selectedAlert.description}
-                    </p>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-5">
+                  <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <AlertTriangle size={14} className="text-red-500" /> Technical_Overview
+                  </h4>
+                  <p className="text-xs text-zinc-300 leading-relaxed font-mono">
+                    {selectedAlert.description}
+                  </p>
                 </div>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <CheckCircle size={12} />
-                      Remediation Plan
-                    </h4>
-                    <p className="text-sm text-blue-100 leading-relaxed bg-blue-500/5 p-4 rounded-lg border border-blue-500/20 italic">
-                      {selectedAlert.remediation}
-                    </p>
-                  </div>
+                <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-5">
+                  <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <CheckCircle size={14} /> Playbook_Recommendation
+                  </h4>
+                  <p className="text-xs text-blue-100/70 leading-relaxed italic">
+                    "{selectedAlert.remediation}"
+                  </p>
                 </div>
               </div>
 
@@ -274,48 +260,59 @@ export default function CyberSOC() {
                     exit={{ opacity: 0, height: 0 }}
                     className="mb-6 overflow-hidden"
                   >
-                    <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-4">
-                       <div className="flex items-center gap-2 text-purple-400 font-bold text-[10px] uppercase mb-2">
-                          <Sparkles size={12} />
-                          Neural Strategic Audit
+                    <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6 relative">
+                       <div className="absolute top-0 right-0 p-4 opacity-10">
+                         <Sparkles size={60} className="text-purple-500" />
                        </div>
-                       <p className="text-sm text-zinc-100 leading-relaxed italic">
-                          "{aiAnalysis}"
+                       <h4 className="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-3 flex items-center gap-2 relative z-10">
+                          <Brain size={14} /> Neural_Strategic_Audit
+                       </h4>
+                       <p className="text-sm text-zinc-100 leading-relaxed font-medium relative z-10 max-w-2xl">
+                          {aiAnalysis}
                        </p>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <div className="flex-1 min-h-0 bg-zinc-950 rounded-lg border border-zinc-800 p-4 font-mono overflow-hidden flex flex-col">
+              {/* Memory Forensics Panel */}
+              {selectedAlert.memoryDump && (
+                <div className="mb-6 bg-black/50 border border-zinc-800 rounded-xl p-5">
+                  <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Binary size={14} className="text-zinc-400" /> Extracted_Memory_Forensics
+                  </h4>
+                  <pre className="text-[9px] text-zinc-400 font-mono leading-relaxed overflow-x-auto custom-scrollbar p-4 bg-zinc-950 border border-zinc-800 rounded">
+                    {selectedAlert.memoryDump}
+                  </pre>
+                </div>
+              )}
+
+              <div className="flex-1 min-h-[150px] bg-zinc-950 border border-zinc-800 rounded-xl p-4 font-mono overflow-hidden flex flex-col">
                  <div className="flex items-center gap-2 mb-3 border-b border-zinc-800 pb-2">
                    <Terminal size={14} className="text-zinc-500" />
-                   <span className="text-[10px] text-zinc-400 font-bold">EVENT_STREAM</span>
+                   <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Incident_Event_Stream</span>
                  </div>
-                 <div className="flex-1 overflow-y-auto text-[10px] space-y-1 custom-scrollbar">
-                    <div className="text-zinc-600">[{new Date(selectedAlert.timestamp).toISOString()}] INF: Initial trigger detected from {selectedAlert.source}</div>
-                    <div className="text-zinc-600">[{new Date(selectedAlert.timestamp + 1000).toISOString()}] INF: Correlation engine identified {selectedAlert.title}</div>
-                    <div className="text-zinc-500">[{new Date(selectedAlert.timestamp + 2000).toISOString()}] DBG: Payload signature matched GHOST_V3_SIG</div>
+                 <div className="flex-1 overflow-y-auto text-[10px] space-y-2 custom-scrollbar">
+                    <div className="text-zinc-600"><span className="text-zinc-700 mr-2">[{new Date(selectedAlert.timestamp).toLocaleTimeString()}]</span> INF: Telemetry spike detected from {selectedAlert.source}</div>
+                    <div className="text-zinc-500"><span className="text-zinc-700 mr-2">[{new Date(selectedAlert.timestamp + 1000).toLocaleTimeString()}]</span> DBG: Sandbox analysis initiated on parent process.</div>
+                    
                     {selectedAlert.status === 'Triaged' && (
-                      <div className="text-yellow-500 font-bold">[{new Date().toISOString()}] ACT: Alert moved to TRIAGED by analyst.</div>
-                    )}
-                    {selectedAlert.status === 'Resolved' && (
-                      <div className="text-green-500 font-bold">[{new Date().toISOString()}] ACT: Automated remediation deployed. Incident CLOSED.</div>
+                      <div className="text-yellow-500 font-bold"><span className="text-yellow-700 mr-2">[{new Date().toLocaleTimeString()}]</span> ACT: Status updated to TRIAGED by primary analyst.</div>
                     )}
                     {isHardening && (
-                      <div className="text-blue-400 animate-pulse">[{new Date().toISOString()}] RUN: Deploying hardening script GP-SOC-2026.sh...</div>
+                      <div className="text-blue-400 animate-pulse"><span className="text-blue-700 mr-2">[{new Date().toLocaleTimeString()}]</span> RUN: Compiling custom EDR remediation policy...</div>
                     )}
-                    {isAiAnalyzing && (
-                      <div className="text-purple-400 animate-pulse">[{new Date().toISOString()}] RUN: Querying Neural Engine for strategic context...</div>
+                    {selectedAlert.status === 'Resolved' && (
+                      <div className="text-emerald-500 font-bold"><span className="text-emerald-700 mr-2">[{new Date().toLocaleTimeString()}]</span> ACT: Host isolated. Neural patch deployed. Incident CLOSED.</div>
                     )}
                  </div>
               </div>
             </div>
           ) : (
-            <div className="bg-zinc-900/50 border border-zinc-800 border-dashed rounded-xl flex flex-col items-center justify-center p-12 text-center opacity-50 h-full">
-              <Shield className="w-16 h-16 text-zinc-700 mb-4" />
-              <h3 className="text-lg font-bold text-zinc-500 uppercase tracking-widest">Select an Alert</h3>
-              <p className="text-sm text-zinc-600 mt-2">Choose an event from the stream to begin triage and remediation.</p>
+            <div className="bg-zinc-900 border border-zinc-800 border-dashed rounded-xl flex flex-col items-center justify-center p-12 text-center opacity-30 h-full">
+              <Shield className="w-20 h-20 text-zinc-700 mb-6" />
+              <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-2">Select Neural Event</h3>
+              <p className="text-zinc-500 text-sm max-w-sm italic">Access deep forensic telemetry and initiate AI-assisted remediation.</p>
             </div>
           )}
         </div>

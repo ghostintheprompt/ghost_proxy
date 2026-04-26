@@ -16,13 +16,16 @@ Ghost Proxy is a systematic environment for digital augmentation, defensive hard
 
 | Module | Capability | Persistence |
 | :--- | :--- | :--- |
-| **GHOST_PROXY** | Real-time UserScript workshop with Gemini AI link | LocalStorage |
-| **PENTEST_LAB** | Multi-domain offensive/defensive command center | State Sync |
-| **NEURAL_LAB** | AI Red Teaming: Prompt Injection & Hijacking | Volatile |
-| **PF_FIREWALL** | macOS/BSD stateful packet filter orchestration | Config Export |
-| **DEFENSIVE_AUDIT** | DNS Scrutiny, Shadow Drive & Legacy System Audit | Session |
-| **GHOST_ACADEMY** | Systematic mastery of 9 cyber security domains | Progress Sync |
-| **GRC_CENTER** | Enterprise policy enforcement & risk auditing | Local DB |
+| **GHOST_PROXY** | Real-time UserScript workshop with Gemini 3.1 Pro link | LocalStorage |
+| **THREAT_SIMULATOR** | Metric-driven kill chains with WAF Evasion Entropy tracking | Session |
+| **NEURAL_LAB** | AI Red Teaming: Token Smuggling & Semantic Sharding Bypass | Volatile |
+| **SHADOW_OSINT** | Neural Forensic Suite: Artifact Reconstruction from LLM leaks | Session |
+| **CYBER_SOC** | Neural Defense Center: Memory Forensics & Actor Correlation | Session |
+| **DECEPTION_ENGINE** | Active Deception: Honey-Token deployment & C2 node tracing | Local DB |
+| **PF_FIREWALL** | macOS/BSD stateful packet filter orchestrator (pf.conf) | Config Export |
+| **PRIVACY_ENGINE** | Mathematical Privacy: Epsilon Tuning & K-Anonymity Factor | Session |
+| **GHOST_ACADEMY** | Systematic mastery of 9 domains with Red/Blue Scenario Labs | Progress Sync |
+| **GRC_COMMAND** | Enterprise Governance: JIT Access & Data Classification Audit | Local DB |
 
 ## Installation
 

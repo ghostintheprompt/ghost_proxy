@@ -22,36 +22,25 @@ The Privacy Engineering Lab builds systems that preserve individual privacy by d
 - **Differential Privacy:** Mathematical noise injection to prevent individual re-identification.
 - **Consent Orchestration:** Real-time synchronization of user opt-out status across the proxy network.
 
-## Offensive (Red Team) - Threat Simulator
-Located in the Pentest Lab > Threat Simulator, this component allows you to execute multi-stage attack chains.
+## Offensive (Red Team) - Exploits & OSINT
+The offensive suite focuses on modern attack surfaces, specifically AI and human factors.
 
-- **Banking Trojan Simulations:** Witness how SYSTEM_ALERT_WINDOW is used to create pixel-perfect overlays.
-- **Cloud Enumeration:** Discovery and assessment of misconfigured S3 buckets.
+- **Neural Exploit Lab:** Master Token Smuggling and Semantic Sharding bypass techniques. Simulate Hijacking and Indirect Injection.
+- **Shadow OSINT:** Scour public neural archives (OpenAI, Anthropic, GitHub) for leaked company secrets and internal archetypes.
+- **Threat Simulator:** Execute multi-stage attack chains for Mobile, Cloud, and IoT surfaces.
 
-## Defensive (Blue Team) - Cyber SOC & Infrastructure
-The Cyber SOC and Infrastructure views provide deep defensive visibility.
+## Defensive (Blue Team) - SOC & Deception
+The defensive suite moves beyond static blocking to active deception and stateful inspection.
 
-- **Cyber SOC CommandCenter:** Real-time threat monitoring with AI_ANALYZE neural insights.
-- **Suarez Infrastructure Orchestrator:** Secure process management across macOS/Linux nodes.
-- **The Dirty Dozen Rules:** Built-in guardrails for payload neutralization.
+- **Deception Engine:** Deploy Honey-Tokens (fake AWS keys, ghost DB records) into your infrastructure to catch attackers early in the kill chain.
+- **Cyber SOC:** Real-time threat monitoring with AI_ANALYZE neural insights.
+- **PF Firewall Orchestrator:** Master the macOS Packet Filter natively with stateful rule processing.
+- **Suarez Infrastructure:** Secure process management across macOS/Linux nodes with "Dirty Dozen" guardrails.
 
 ## Elevated for Summer 2026
 - **Post-Quantum Readiness:** Scenarios covering ML-KEM/Kyber and ML-DSA/Dilithium.
-- Purpose-Aware Auditing: Detecting data misuse based on original collection intent.
-- Screen Isolation: Advanced mobile defense against SYSTEM_ALERT_WINDOW overlays.
-
-## Pro Deployment: The Hybrid Workflow (M1 + Linux)
-For Red Team AI professionals, Ghost Proxy should be deployed in a synchronized hybrid environment to maximize field utility:
-
-### Native macOS (M1/M2 DMG)
-- Host-Based Defense: Master the PF Firewall module natively. This allows you to learn how to lock down your primary workstation's kernel-level firewall.
-- Neural Lab Performance: Leverage local Apple Silicon (M-series) neural engines for high-speed prompt injection research.
-- Stealth Research: Use the UI Sentinel to test how macOS-specific browser sandboxes handle 2026-era phantom overlays.
-
-### Linux on UTM (with Alfa Adapter)
-- Physical Layer Offense: Use a Linux VM to gain unrestricted access to your Alfa card's monitor mode and packet injection capabilities.
-- Machine-in-the-Middle (MitM): Develop AI-hijacking scripts in Ghost Proxy and deploy them to the Linux node via DEPLOY_TO_FIELD for real-world traffic interception.
-- Autonomous Nodes: Simulate the Suarez "Daemon" architecture by orchestrating multiple Linux nodes from your native macOS C2.
+- **Purpose-Aware Auditing:** Detecting data misuse based on original collection intent.
+- **Active Deception:** Using Honey-Tokens to stop lateral movement before it reaches the core.
 
 ---
 *Ghost Proxy - Intercept . Augment . Anonymize*
